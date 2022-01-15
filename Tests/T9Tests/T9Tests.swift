@@ -2,8 +2,10 @@ import XCTest
 @testable import T9
 
 final class T9Tests: XCTestCase {
+
+    let t9 = try! T9()
+
     func testExample() throws {
-        let t9 = try T9()
 
         let com: [Character] = ["u","j"]
         let result = t9.search(set: com)

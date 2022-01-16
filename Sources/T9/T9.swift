@@ -56,13 +56,16 @@ public struct T9 {
         punchuationMarkList = try split(strArr[1])
     }
 }
-
+//  where 
 public extension T9 {
     func search(set: [Character]) -> [Word] {
         let result = self.wordList.filter({ word in
-            for (index, char) in set.enumerated() where char != KeyStroke.l.rawValue {
+            for (index, char) in set.enumerated() {
                 guard let c = word.combination[safe: index] else {
                     return false
+                }
+                if char == KeyStroke.l.rawValue {
+                    continue
                 }
                 if c != char {
                     return false

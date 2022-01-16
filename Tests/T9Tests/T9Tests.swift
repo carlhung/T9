@@ -23,7 +23,10 @@ extension T9 {
     func search(set: [Character]) -> [Word] {
         let result = self.wordList.filter({ word in
             for (index, char) in set.enumerated() {
-                if word.combination[safe: index] != char {
+                guard let c = word.combination[safe: index] else {
+                    return false
+                }
+                if c != char {
                     return false
                 }
             }

@@ -26,13 +26,7 @@ public struct T9 {
     public let wordList: [Word]
     public let punchuationMarkList: [Word]
 
-    public var keyMap: [KeyStroke: Character] = {
-        var keyMap: [KeyStroke: Character] = [:]
-        for stroke in KeyStroke.allCases {
-            keyMap[stroke] = stroke.rawValue
-        }
-        return keyMap
-    }()
+    public var keyMap: [Character: KeyStroke] = Dictionary(uniqueKeysWithValues: KeyStroke.allCases.map {($0.rawValue, $0)})
 
     private let filename = "T9.txt"
 
@@ -60,5 +54,30 @@ public struct T9 {
 
         wordList = try split(strArr[2])
         punchuationMarkList = try split(strArr[1])
+    }
+}
+
+public extension T9 {
+    func search(set: [Character]) -> [Word] {
+        let result = self.wordList.filter({ word in
+            for (index, char) in set.enumerated() where char != KeyStroke.l.rawValue {
+                guard let c = word.combination[safe: index] else {
+                    return false
+                }
+                if c != char {
+                    return false
+                }
+            }
+            return true
+        })
+        .sorted(by: { $0.combination.count < $1.combination.count })
+        return result
+    }
+}
+
+public extension Collection {
+    /// Returns the element at the specified index if it is within bounds, otherwise nil.
+    subscript (safe index: Index) -> Element? {
+        return indices.contains(index) ? self[index] : nil
     }
 }

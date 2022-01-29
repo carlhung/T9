@@ -1,9 +1,11 @@
 import Foundation
 
 public enum T9Error: Error {
-    case wrongURL
+    case wrongWordListURL
+    case wrongRelatedWordListURL
     case wrongFileFormat
     case dataError
+    case failedToMapKey
 }
 
 public enum KeyStroke: Character, CaseIterable, Hashable {
@@ -17,23 +19,28 @@ public enum KeyStroke: Character, CaseIterable, Hashable {
     case u = "u", i = "i", o = "o", j = "j", k = "k"
 }
 
+public struct Word<T> {
+    let word: String
+    let combination: [T]
+}
+
 public struct T9 {
-    public struct Word {
-        let word: String
-        let combination: [Character]
-    }
 
-    public let wordList: [Word]
-    public let punchuationMarkList: [Word]
+    public let wordList: [Word<Character>]
+    public let punchuationMarkList: [Word<Character>]
 
-    public var keyMap: [Character: KeyStroke] = Dictionary(uniqueKeysWithValues: KeyStroke.allCases.map {($0.rawValue, $0)})
+    private var keyMap: [Character: KeyStroke]
 
-    private let filename = "T9.txt"
-
-    public init() throws {
+    public init(p: Character = "p", 
+                 l: Character = "l",
+                 u: Character = "u",
+                 i: Character = "i",
+                 o: Character = "o",
+                 j: Character = "j",
+                 k: Character = "k") throws {
         let fileURL = Bundle.module.url(forResource: "T9", withExtension: "txt")
         guard let fileURL = fileURL else {
-            throw T9Error.wrongURL
+            throw T9Error.wrongWordListURL
         }
 
         let str = try String(contentsOf: fileURL, encoding: String.Encoding.utf8)
@@ -42,7 +49,7 @@ public struct T9 {
             throw T9Error.wrongFileFormat
         }
 
-        let split: (String) throws -> [Word] = { str in
+        let split: (String) throws -> [Word<Character>] = { str in
             return try str.split(separator: "\r\n").map { 
                 let wordAndKey = $0.split(separator: " ")
                 guard wordAndKey.count == 2 else {
@@ -54,11 +61,27 @@ public struct T9 {
 
         wordList = try split(strArr[2])
         punchuationMarkList = try split(strArr[1])
+
+        self.keyMap =  [
+            p: .p,
+            l: .l,
+            u: .u,
+            i: .i,
+            o: .o,
+            j: .j,
+            k: .k,
+        ]
     }
 }
-//  where 
+
 public extension T9 {
-    func search(set: [Character]) -> [Word] {
+    func search(set: [Character]) throws -> [Word<Character>] {
+        let set: [Character] = try set.map {
+            guard let char = keyMap[$0]?.rawValue else {
+                throw T9Error.failedToMapKey
+            }
+            return char
+        } 
         let result = self.wordList.filter({ word in
             for (index, char) in set.enumerated() {
                 guard let c = word.combination[safe: index] else {
@@ -78,9 +101,22 @@ public extension T9 {
     }
 }
 
-public extension Collection {
-    /// Returns the element at the specified index if it is within bounds, otherwise nil.
-    subscript (safe index: Index) -> Element? {
-        return indices.contains(index) ? self[index] : nil
+public extension T9 {
+    mutating func setKeys(p: Character,
+                          l: Character,
+                          u: Character,
+                          i: Character,
+                          o: Character,
+                          j: Character,
+                          k: Character) {
+        self.keyMap = [
+            p: .p,
+            l: .l,
+            u: .u,
+            i: .i,
+            o: .o,
+            j: .j,
+            k: .k,
+        ]
     }
 }

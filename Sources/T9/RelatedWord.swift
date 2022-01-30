@@ -17,8 +17,7 @@ public struct RelatedWord {
                 }
                 var elm = newRelatedWordList.removeFirst()
                 let firstChar = elm.removeFirst()
-                newRelatedWordList.insert(elm, at: 0)
-                return Word(word: String(firstChar), combination: newRelatedWordList)
+                return Word(word: String(firstChar), combination: [elm] + newRelatedWordList)
             }
         relatedWordList = strArr
     }

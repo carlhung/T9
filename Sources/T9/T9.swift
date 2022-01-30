@@ -119,4 +119,10 @@ public extension T9 {
             k: .k,
         ]
     }
+
+    var showKeyMap: [(KeyStroke, Character)] {
+        return self.keyMap.map {
+            ($0.value, $0.key)
+        }
+    }
 }

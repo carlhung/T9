@@ -7,6 +7,9 @@ final class T9Tests: XCTestCase {
     let relatedWords = try! RelatedWord()
 
     func testExample() throws {
+
+        print("show keyMap: \(t9.showKeyMap)")
+
         let result = try t9.search(set: Array("guoododjuuuduodkuu"))
         let relatedWords = relatedWords.findRelatedWords(target: result[0].word)
         print(relatedWords)

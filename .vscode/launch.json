@@ -4,7 +4,10 @@
             "type": "lldb",
             "request": "launch",
             "name": "Test T9",
-            "program": "${workspaceFolder:T9}/.build/debug/T9PackageTests.xctest",
+            "program": "/Applications/Xcode.app/Contents/Developer/usr/bin/xctest",
+            "args": [
+                ".build/debug/T9PackageTests.xctest"
+            ],
             "cwd": "${workspaceFolder:T9}",
             "preLaunchTask": "swift: Build All"
         }
